@@ -1,0 +1,9 @@
+version: "3.9"
+
+services:
+  humidifer:
+    build: .
+    devices:
+      - /dev/mem:/dev/mem
+      - /dev/gpiomem:/dev/gpiomem
+    command: python3 humidifier-control.py --pin 5 --topic "tent1/test" --host "test.mosquitto.org"
