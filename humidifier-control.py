@@ -16,13 +16,14 @@ def on_message(client, userdata, message):
     payload = message.payload
     # if payload True, turn it on
     # add arg to this function with pin number?
+    pin = userdata['pin']
     if payload == b'True':
-        GPIO.output(5, GPIO.LOW)
+        GPIO.output(pin, GPIO.LOW)
     elif payload == b'False':
-        GPIO.output(5, GPIO.HIGH)
+        GPIO.output(pin, GPIO.HIGH)
 
-def mqtt_connect(topic, host):
-    client = mqtt.Client()
+def mqtt_connect(topic: str, host: str, userdata: dict):
+    client = mqtt.Client(userdata=userdata)
     client.connect(host, 1883) #make opt arg
     client.subscribe(topic)
     return client
@@ -38,7 +39,9 @@ if __name__=='__main__':
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(args.pin, GPIO.OUT)
 
-    client = mqtt_connect(args.topic, args.host)
+    client_userdata = {'pin': 5}
+
+    client = mqtt_connect(args.topic, args.host, client_userdata)
     client.on_message = on_message
     atexit.register(cleanup, client)
     client.loop_forever()
